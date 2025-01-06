@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-# TODO: Change project name
 project(Template)
 
 set(CMAKE_CXX_STANDARD 17)

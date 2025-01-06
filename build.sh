@@ -45,7 +45,5 @@ fi
 
 if [ "$RUN_MAIN" = true ]; then
     print_title "Running main"
-
-    # TODO: Change to project name
     ./Template
 fi
