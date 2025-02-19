@@ -1,7 +1,18 @@
 #include <iostream>
 
-int main()
+int main(int argc, char* argv[])
 {
-    std::cout << "Hello, World!" << std::endl;
+    if (argc > 1)
+    {
+        std::cout << "Arguments:" << std::endl;
+
+        for (int i = 1; i < argc; i++)
+            std::cout << argv[i] << std::endl;
+    }
+    else
+    {
+        std::cout << "No arguments" << std::endl;
+    }
+
     return 0;
 }

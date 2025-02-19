@@ -25,14 +25,19 @@ while getopts "rtc" flag; do
         r) RUN_MAIN=true ;;
         t) RUN_TESTS=true ;;
         *)
-            echo "Usage: $0 [-r] [-t] [-c]"
+            echo "Usage: $0 [-r] [-t] [-c] [ARGS...]"
             echo "  -r: Run main"
             echo "  -t: Run tests"
             echo "  -c: Clean build directory"
+            echo "  ARGS: Arguments to pass to the program"
             exit 1
             ;;
     esac
 done
+
+shift $((OPTIND - 1))
+
+ADDITIONAL_ARGS="$@"
 
 if [ "$CLEAN_BUILD" = true ]; then
     echo "Cleaning build directory"
@@ -58,6 +63,7 @@ fi
 
 if [ "$RUN_MAIN" = true ]; then
     print_title "Running main"
-    ./Template
+    ./Template $ADDITIONAL_ARGS
     exit_on_failure "Main"
 fi
+
