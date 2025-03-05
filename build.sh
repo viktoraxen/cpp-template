@@ -5,10 +5,8 @@ BUILD_DIR=build
 RUN_MAIN=false
 RUN_TESTS=false
 CLEAN_BUILD=false
-
-function print_title {
-    printf "\n=== $1 ===\n\n"
-}
+VERBOSE_CMAKE=false
+VERBOSE_MAKE=false
 
 function exit_on_failure() {
     if [ $? -ne 0 ]; then
@@ -19,16 +17,20 @@ function exit_on_failure() {
 }
 
 # Parse flags
-while getopts "rtc" flag; do
+while getopts "crtCM" flag; do
     case $flag in
         c) CLEAN_BUILD=true ;;
         r) RUN_MAIN=true ;;
         t) RUN_TESTS=true ;;
+        C) VERBOSE_CMAKE=true ;;
+        M) VERBOSE_MAKE=true ;;
         *)
-            echo "Usage: $0 [-r] [-t] [-c] [ARGS...]"
+            echo "Usage: $0 [-r] [-t] [-c] [-C] [-M] [ARGS...]"
             echo "  -r: Run main"
             echo "  -t: Run tests"
             echo "  -c: Clean build directory"
+            echo "  -C: Verbose output for cmake"
+            echo "  -M: Verbose output for make"
             echo "  ARGS: Arguments to pass to the program"
             exit 1
             ;;
@@ -49,20 +51,28 @@ mkdir -p $BUILD_DIR
 
 cd $BUILD_DIR
 
-cmake -S ..
+if [ "$VERBOSE_CMAKE" = true ]; then
+    cmake -S ..
+else
+    cmake -S .. &> /dev/null
+fi
+
 exit_on_failure "Cmake"
 
-make
+if [ "$VERBOSE_MAKE" = true ]; then
+    make
+else
+    make &> /dev/null
+fi
+
 exit_on_failure "Make"
 
 if [ "$RUN_TESTS" = true ]; then
-    print_title "Running tests"
     ctest
     exit_on_failure "Tests"
 fi
 
 if [ "$RUN_MAIN" = true ]; then
-    print_title "Running main"
     ./Template $ADDITIONAL_ARGS
     exit_on_failure "Main"
 fi

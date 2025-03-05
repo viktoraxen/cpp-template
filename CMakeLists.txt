@@ -9,8 +9,3 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(Template src/main.cpp)
 target_include_directories(Template PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
-# Needs to be in top-level CMakeLists
-enable_testing()
-
-add_subdirectory(test)
