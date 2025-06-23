@@ -88,6 +88,10 @@ if [ "$CLEAN_BUILD" = true ]; then
 
     GENERATE_MAKEFILES=true
     end_action $exit_code "$output"
+else
+    if [ ! -d "$BUILD_DIR" ]; then
+        GENERATE_MAKEFILES=true
+    fi
 fi
 
 mkdir -p $BUILD_DIR
@@ -123,6 +127,12 @@ if [ "$RUN_TESTS" = true ]; then
 fi
 
 if [ "$RUN_MAIN" = true ]; then
-    printf "  ${CYAN} ${NC} Running main...\n"
-    ./out $ADDITIONAL_ARGS
+    if [ ! -f ".executable_name" ]; then
+        echo -e " ${RED} ${NC} Error: Could not find .executable_name file. Did cmake run successfully?"
+        exit 1
+    fi
+    EXECUTABLE_NAME=$(cat .executable_name)
+    
+    printf "  ${CYAN} ${NC} Running ${EXECUTABLE_NAME}...\n"
+    ./${EXECUTABLE_NAME} $ADDITIONAL_ARGS
 fi

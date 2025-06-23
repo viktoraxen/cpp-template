@@ -5,7 +5,7 @@ INCLUDE_RESOURCES=false
 INIT_GIT=false
 
 function print_usage {
-    echo "Usage: $0 [-g] [-r] [-t] <repo_name> [project_name]" 
+    echo "Usage: $0 [-g] [-r] [-t] <project_name>" 
     echo "  -g: Initialize git repository"
     echo "  -r: Initialize resource directory"
     echo "  -t: Include testing framework"
@@ -23,30 +23,25 @@ done
 
 shift $((OPTIND - 1))
 
-# Ensure REPOSITORY_NAME is provided
+# Ensure PROJECT_NAME is provided
 if [[ -z "$1" ]]; then
     print_usage
     exit 1
 fi
 
 # Arguments
-REPOSITORY_NAME=$1
+PROJECT_NAME=$1
 
-PROJECT_NAME=${2:-$(echo "${REPOSITORY_NAME^}")}
-
-echo "Creating template C++ project"
-echo "Project name:    $PROJECT_NAME"
-echo "Repository name: $REPOSITORY_NAME"
+echo "Creating new C++ project: $PROJECT_NAME"
 
 # Get the absolute path of the template repository
 TEMPLATE_REPO=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-mkdir "$REPOSITORY_NAME" || exit 1
+mkdir "$PROJECT_NAME" || exit 1
 
-cd "$REPOSITORY_NAME" || exit 1
+cd "$PROJECT_NAME" || exit 1
 
 cp "$TEMPLATE_REPO/CMakeLists.txt" "."
-cp "$TEMPLATE_REPO/build.sh" "."
 
 cp -r "$TEMPLATE_REPO/src/" "."
 
@@ -62,11 +57,10 @@ if [ "$INCLUDE_TESTS" = true ]; then
     cp -r "$TEMPLATE_REPO/test/" "."
     sed -i "s/Template/$PROJECT_NAME/g" test/CMakeLists.txt
     echo "" >> CMakeLists.txt
-    cat "$TEMPLATE_REPO/test/include_tests.cmake" >> CMakeLists.txt
+    cat "$TEMPLATE_REPO/include_tests.cmake" >> CMakeLists.txt
 fi
 
 sed -i "s/Template/$PROJECT_NAME/g" CMakeLists.txt
-sed -i "s/Template/$PROJECT_NAME/g" build.sh
 
 if [ "$INIT_GIT" = true ]; then
     echo "Initializing git repository"
@@ -74,4 +68,4 @@ if [ "$INIT_GIT" = true ]; then
     cp "$TEMPLATE_REPO/.gitignore" "."
 fi
 
-echo "Done! New repository initialized in $REPOSITORY_NAME."
+echo "Done! New repository initialized in $PROJECT_NAME."
